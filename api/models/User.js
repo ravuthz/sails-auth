@@ -7,13 +7,40 @@
 
 module.exports = {
 
+  table: 'users',
+
   attributes: {
+    name: {
+      type: 'string'
+    },
+    email: {
+      type: 'email',
+      required: true
+    },
+    password: {
+      type: 'string',
+      required: true
+    }
+  },
+  
+  register: function (inputs, cb) {
+    User.create({
+      name: inputs.name,
+      email: inputs.email,
+      // TODO: But encrypt the password first
+      password: inputs.password
+    })
+    .exec(cb);
+  },
 
-    register : { type: 'string' },
-
-    login : { type: 'string' },
-
-    logout : { type: 'string' }
+  login: function (inputs, cb) {
+    User.findOne({
+      email: inputs.email,
+      // TODO: But encrypt the password first
+      password: inputs.password
+    })
+    .exec(cb);
   }
+  
 };
 
