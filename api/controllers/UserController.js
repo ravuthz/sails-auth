@@ -7,14 +7,28 @@
 
 module.exports = {
 	
-
-
+	
   /**
    * `UserController.register()`
    */
-  register: function (req, res) {
-    return res.json({
-      todo: 'register() is not implemented yet!'
+  register: function (req, res, next) {
+        
+    User.register({
+      name: req.param('name'),
+      email: req.param('email'),
+      password: req.param('password')
+    }, function (err, user) {
+      if (err) {
+        return next(err);
+      }
+
+      req.session.me = user.id;
+
+      if (req.wantsJSON) {
+        return res.ok('Register successful!');
+      }
+      
+      return res.redirect('/login');
     });
   },
 
@@ -22,9 +36,21 @@ module.exports = {
   /**
    * `UserController.login()`
    */
-  login: function (req, res) {
-    return res.json({
-      todo: 'login() is not implemented yet!'
+  login: function (req, res, next) {
+    return User.login({
+      email: req.param('email'),
+      password: req.param('password')
+    }, function (err, user) {
+      if (err) {
+        return next(err);
+      }
+      
+      if (req.wantsJSON) {
+        return res.ok('Login successful!');
+      }
+      
+      return res.redirect('/welcome');
+      
     });
   },
 
@@ -33,9 +59,15 @@ module.exports = {
    * `UserController.logout()`
    */
   logout: function (req, res) {
-    return res.json({
-      todo: 'logout() is not implemented yet!'
-    });
+    req.session.me = null;
+
+    if (req.wantsJSON) {
+      return res.ok('Logged out successfully!');
+    }
+
+    return res.redirect('/');
   }
+  
+  
 };
 
